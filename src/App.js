@@ -3,7 +3,7 @@ import Header from "./component/Header";
 import TodoEditor from "./component/TodoEditor";
 import TodoList from "./component/TodoList";
 
-import React, { useState, useRef, useReducer, useCallback } from "react";
+import React, { useRef, useReducer, useCallback } from "react";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -27,6 +27,7 @@ function reducer(state, action) {
       return state;
   }
 }
+export const TodoContext = React.createContext();
 
 function App() {
   const MockData = [
@@ -87,8 +88,10 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <TodoEditor onCreate={onCreate} />
-      <TodoList todo={todo} onUpdate={onUpdate} onDelete={onDelete} />
+      <TodoContext.Provider value={{ todo, onCreate, onUpdate, onDelete }}>
+        <TodoEditor />
+        <TodoList />
+      </TodoContext.Provider>
       <div>footer</div>
     </div>
   );
