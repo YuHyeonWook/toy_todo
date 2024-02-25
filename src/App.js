@@ -3,7 +3,30 @@ import Header from "./component/Header";
 import TodoEditor from "./component/TodoEditor";
 import TodoList from "./component/TodoList";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useReducer } from "react";
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "CREATE": {
+      return [action.newItem, ...state];
+    }
+    case "UPDATE": {
+      return state.map((el) =>
+        el.id === action.targetId
+          ? {
+              ...el,
+              isDone: !el.isDone,
+            }
+          : el
+      );
+    }
+    case "DELETE": {
+      return state.filter((el) => el.id !== action.targetId);
+    }
+    default:
+      return state;
+  }
+}
 
 function App() {
   const MockData = [
@@ -27,31 +50,38 @@ function App() {
     },
   ];
 
-  const [todo, setTodo] = useState(MockData);
+  const [todo, dispatch] = useReducer(reducer, MockData);
   const idRef = useRef(3);
 
   const onCreate = (content) => {
-    const newItem = {
-      id: idRef.current,
-      content,
-      isDone: false,
-      createdDate: new Date().getTime(),
-    };
-    setTodo([newItem, ...todo]);
+    dispatch({
+      type: "CREATE",
+      newItem: {
+        id: idRef.current,
+        content,
+        isDone: false,
+        createdDate: new Date().getTime(),
+      },
+    });
     idRef.current += 1;
   };
 
   // todolist 체크박스
   const onUpdate = (targetId) => {
-    setTodo(
-      todo.map((el) =>
-        el.id === targetId ? { ...el, isDone: !el.isDone } : el
-      )
-    );
+    dispatch({
+      type: "UPDATE",
+      targetId,
+    });
   };
 
   const onDelete = (targetId) => {
-    setTodo(todo.filter((el) => el.id !== targetId));
+    const confirmDelete = window.confirm("삭제하겠습니까?");
+    if (confirmDelete) {
+      dispatch({
+        type: "DELETE",
+        targetId,
+      });
+    }
   };
 
   return (

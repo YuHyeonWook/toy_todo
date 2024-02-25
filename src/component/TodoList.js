@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import TodoItem from "./TodoItem";
 import "./css/TodoList.css";
 
@@ -19,9 +19,25 @@ const TodoList = ({ todo, onUpdate, onDelete }) => {
         );
   };
 
+  const analyzeTodo = useMemo(() => {
+    console.log("analy 함수 호출");
+    const totalCount = todo.length;
+    const doneCount = todo.filter((el) => el.isDone).length;
+    const notDoneCount = totalCount - doneCount;
+    return {
+      totalCount,
+      doneCount,
+      notDoneCount,
+    };
+  }, [todo]);
+
+  const { totalCount, doneCount, notDoneCount } = analyzeTodo;
+
   return (
     <div className="TodoList">
-      <h4>목록 {`${"갯수"}`}</h4>
+      <h4>목록 {totalCount}</h4>
+      <h4>완료된 할일: {doneCount}</h4>
+      <h4>아직 완료하지 못한 한 일: {notDoneCount}</h4>
       <input
         value={search}
         onChange={onChangeSearch}
