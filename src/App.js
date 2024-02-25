@@ -3,7 +3,7 @@ import Header from "./component/Header";
 import TodoEditor from "./component/TodoEditor";
 import TodoList from "./component/TodoList";
 
-import React, { useRef, useReducer, useCallback } from "react";
+import React, { useRef, useReducer, useCallback, useMemo } from "react";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -27,7 +27,8 @@ function reducer(state, action) {
       return state;
   }
 }
-export const TodoContext = React.createContext();
+export const TodoStateContext = React.createContext();
+export const TodoDispatchContext = React.createContext();
 
 function App() {
   const MockData = [
@@ -85,13 +86,18 @@ function App() {
     }
   }, []);
 
+  const memoizedDispatches = useMemo(() => {
+    return { onCreate, onUpdate, onDelete };
+  }, []);
   return (
     <div className="App">
       <Header />
-      <TodoContext.Provider value={{ todo, onCreate, onUpdate, onDelete }}>
-        <TodoEditor />
-        <TodoList />
-      </TodoContext.Provider>
+      <TodoStateContext.Provider value={{ todo }}>
+        <TodoDispatchContext.Provider value={memoizedDispatches}>
+          <TodoEditor />
+          <TodoList />
+        </TodoDispatchContext.Provider>
+      </TodoStateContext.Provider>
       <div>footer</div>
     </div>
   );
