@@ -3,7 +3,7 @@ import Header from "./component/Header";
 import TodoEditor from "./component/TodoEditor";
 import TodoList from "./component/TodoList";
 
-import React, { useState, useRef, useReducer } from "react";
+import React, { useState, useRef, useReducer, useCallback } from "react";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -67,14 +67,14 @@ function App() {
   };
 
   // todolist 체크박스
-  const onUpdate = (targetId) => {
+  const onUpdate = useCallback((targetId) => {
     dispatch({
       type: "UPDATE",
       targetId,
     });
-  };
+  }, []);
 
-  const onDelete = (targetId) => {
+  const onDelete = useCallback((targetId) => {
     const confirmDelete = window.confirm("삭제하겠습니까?");
     if (confirmDelete) {
       dispatch({
@@ -82,7 +82,7 @@ function App() {
         targetId,
       });
     }
-  };
+  }, []);
 
   return (
     <div className="App">
